@@ -41,9 +41,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// TODO(r0mant): Redefined in srv/app/server.go.
-type RotationGetter func(role teleport.Role) (*services.Rotation, error)
-
 // Config is the configuration for an database proxy server.
 type Config struct {
 	// Clock used to control time.
@@ -64,7 +61,7 @@ type Config struct {
 	// Authorizer is used to authorize requests coming from proxy.
 	Authorizer auth.Authorizer
 	// GetRotation returns the certificate rotation state.
-	GetRotation RotationGetter
+	GetRotation func(role teleport.Role) (*services.Rotation, error)
 	// Servers contains a list of database servers this service proxies.
 	Servers []services.DatabaseServer
 	// Credentials are credentials to AWS API.
@@ -213,26 +210,11 @@ func (s *Server) initDynamicLabels(ctx context.Context, server services.Database
 
 func (s *Server) initHeartbeat(ctx context.Context, server services.DatabaseServer) error {
 	heartbeat, err := srv.NewHeartbeat(srv.HeartbeatConfig{
-		Context:   s.closeContext,
-		Component: teleport.ComponentDB,
-		Mode:      srv.HeartbeatModeDB,
-		Announcer: s.AccessPoint,
-		GetServerInfo: func() (services.Resource, error) {
-			// Update dynamic labels.
-			if labels, ok := s.dynamicLabels[server.GetName()]; ok {
-				server.SetDynamicLabels(labels.Get())
-			}
-			// Update CA rotation state.
-			rotation, err := s.GetRotation(teleport.RoleDatabase)
-			if err != nil && !trace.IsNotFound(err) {
-				s.WithError(err).Warn("Failed to get rotation state.")
-			} else {
-				server.SetRotation(*rotation)
-			}
-			// Update TTL.
-			server.SetTTL(s.Clock, defaults.ServerAnnounceTTL)
-			return server, nil
-		},
+		Context:         s.closeContext,
+		Component:       teleport.ComponentDB,
+		Mode:            srv.HeartbeatModeDB,
+		Announcer:       s.AccessPoint,
+		GetServerInfo:   s.getServerInfoFunc(server),
 		KeepAlivePeriod: defaults.ServerKeepAliveTTL,
 		AnnouncePeriod:  defaults.ServerAnnounceTTL/2 + utils.RandomDuration(defaults.ServerAnnounceTTL/10),
 		CheckPeriod:     defaults.HeartbeatCheckPeriod,
@@ -244,6 +226,25 @@ func (s *Server) initHeartbeat(ctx context.Context, server services.DatabaseServ
 	}
 	s.heartbeats[server.GetName()] = heartbeat
 	return nil
+}
+
+func (s *Server) getServerInfoFunc(server services.DatabaseServer) func() (services.Resource, error) {
+	return func() (services.Resource, error) {
+		// Update dynamic labels.
+		if labels, ok := s.dynamicLabels[server.GetName()]; ok {
+			server.SetDynamicLabels(labels.Get())
+		}
+		// Update CA rotation state.
+		rotation, err := s.GetRotation(teleport.RoleDatabase)
+		if err != nil && !trace.IsNotFound(err) {
+			s.WithError(err).Warn("Failed to get rotation state.")
+		} else {
+			server.SetRotation(*rotation)
+		}
+		// Update TTL.
+		server.SetTTL(s.Clock, defaults.ServerAnnounceTTL)
+		return server, nil
+	}
 }
 
 // Start starts heartbeating the presence of service.Databases that this

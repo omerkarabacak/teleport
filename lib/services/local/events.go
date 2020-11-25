@@ -725,7 +725,7 @@ func (p *kubeServiceParser) parse(event backend.Event) (services.Resource, error
 
 func newDatabaseServerParser() *databaseServerParser {
 	return &databaseServerParser{
-		baseParser: baseParser{matchPrefix: backend.Key(databaseServersPrefix, defaults.Namespace)},
+		baseParser: baseParser{matchPrefix: backend.Key(dbServersPrefix, defaults.Namespace)},
 	}
 }
 

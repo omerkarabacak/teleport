@@ -338,10 +338,22 @@ var (
 	proxyPrefix = []byte{'P', 'R', 'O', 'X', 'Y'}
 	sshPrefix   = []byte{'S', 'S', 'H'}
 	tlsPrefix   = []byte{0x16}
-	psqlPrefix  = []byte{0x0, 0x0, 0x0, 0x8, 0x4, 0xd2, 0x16, 0x2f}
-	// TODO(r0mant): Implement CancelRequest detection.
-	psqlPrefix2 = []byte{0x0, 0x0, 0x0, 0x10, 0x4, 0xd2, 0x16, 0x2e}
-	//psqlPrefix3 = []byte{0x0, 0x0, 0x0, 0x27, 0x0, 0x3, 0x0, 0x0}
+)
+
+// This section defines Postgres wire protocol messages detected by Teleport:
+//
+// https://www.postgresql.org/docs/13/protocol-message-formats.html
+var (
+	// postgresSSLRequest is always sent first by a Postgres client (e.g. psql)
+	// to check whether the server supports TLS.
+	postgresSSLRequest = []byte{0x0, 0x0, 0x0, 0x8, 0x4, 0xd2, 0x16, 0x2f}
+	// postgresCancelRequest is sent when a Postgres client requests cancel of
+	// a long-running query.
+	//
+	// TODO(r0mant): It is currently unsupported because it is sent over a
+	// separate plain connection, but we're detecting it anyway so it at
+	// least appears in the logs as "unsupported" for debugging.
+	postgresCancelRequest = []byte{0x0, 0x0, 0x0, 0x10, 0x4, 0xd2, 0x16, 0x2e}
 )
 
 // isHTTP returns true if the first 3 bytes of the prefix indicate
@@ -378,7 +390,7 @@ func detectProto(in []byte) (int, error) {
 		return ProtoTLS, nil
 	case isHTTP(in):
 		return ProtoHTTP, nil
-	case bytes.HasPrefix(in, psqlPrefix), bytes.HasPrefix(in, psqlPrefix2):
+	case bytes.HasPrefix(in, postgresSSLRequest), bytes.HasPrefix(in, postgresCancelRequest):
 		return ProtoPostgres, nil
 	default:
 		return ProtoUnknown, trace.BadParameter("failed to detect protocol by prefix: %#v", in)

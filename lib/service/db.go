@@ -17,8 +17,6 @@ limitations under the License.
 package service
 
 import (
-	"fmt"
-
 	"github.com/gravitational/teleport"
 	"github.com/gravitational/teleport/lib/auth"
 	"github.com/gravitational/teleport/lib/cache"
@@ -89,7 +87,7 @@ func (process *TeleportProcess) initDatabaseService() error {
 	var databaseServers []services.DatabaseServer
 	for _, db := range process.Config.Databases.Databases {
 		databaseServers = append(databaseServers, services.NewDatabaseServerV2(
-			fmt.Sprintf("%v-%v", process.Config.HostUUID, db.Name),
+			db.Name,
 			db.StaticLabels,
 			services.DatabaseServerSpecV2{
 				Name:          db.Name,

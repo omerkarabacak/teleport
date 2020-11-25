@@ -1038,7 +1038,7 @@ func (s *PresenceService) GetDatabaseServers(ctx context.Context, namespace stri
 	if namespace == "" {
 		return nil, trace.BadParameter("missing namespace")
 	}
-	startKey := backend.Key(databaseServersPrefix, namespace)
+	startKey := backend.Key(dbServersPrefix, namespace)
 	result, err := s.GetRange(ctx, startKey, backend.RangeEnd(startKey), backend.NoLimit)
 	if err != nil {
 		return nil, trace.Wrap(err)
@@ -1069,7 +1069,10 @@ func (s *PresenceService) UpsertDatabaseServer(ctx context.Context, server servi
 		return nil, trace.Wrap(err)
 	}
 	lease, err := s.Put(ctx, backend.Item{
-		Key:     backend.Key(databaseServersPrefix, server.GetNamespace(), server.GetName()),
+		Key: backend.Key(dbServersPrefix,
+			server.GetNamespace(),
+			server.GetHostID(),
+			server.GetName()),
 		Value:   value,
 		Expires: server.Expiry(),
 		ID:      server.GetResourceID(),
@@ -1084,18 +1087,19 @@ func (s *PresenceService) UpsertDatabaseServer(ctx context.Context, server servi
 		Type:    services.KeepAlive_DATABASE,
 		LeaseID: lease.ID,
 		Name:    server.GetName(),
+		HostID:  server.GetHostID(),
 	}, nil
 }
 
 // DeleteDatabaseServer removes the specified database proxy server.
 func (s *PresenceService) DeleteDatabaseServer(ctx context.Context, namespace string, name string) error {
-	key := backend.Key(databaseServersPrefix, namespace, name)
+	key := backend.Key(dbServersPrefix, namespace, name)
 	return s.Delete(ctx, key)
 }
 
 // DeleteAllDatabaseServers removes all registered database proxy servers.
 func (s *PresenceService) DeleteAllDatabaseServers(ctx context.Context, namespace string) error {
-	startKey := backend.Key(databaseServersPrefix, namespace)
+	startKey := backend.Key(dbServersPrefix, namespace)
 	return s.DeleteRange(ctx, startKey, backend.RangeEnd(startKey))
 }
 
@@ -1185,7 +1189,7 @@ func (s *PresenceService) KeepAliveServer(ctx context.Context, h services.KeepAl
 	case teleport.KeepAliveApp:
 		key = backend.Key(appsPrefix, serversPrefix, h.Namespace, h.Name)
 	case teleport.KeepAliveDatabase:
-		key = backend.Key(databaseServersPrefix, serversPrefix, h.Namespace, h.Name)
+		key = backend.Key(dbServersPrefix, h.Namespace, h.HostID, h.Name)
 	default:
 		return trace.BadParameter("unknown keep-alive type %q", h.GetType())
 	}
@@ -1206,7 +1210,7 @@ const (
 	nodesPrefix             = "nodes"
 	appsPrefix              = "apps"
 	serversPrefix           = "servers"
-	databaseServersPrefix   = "databaseServers"
+	dbServersPrefix         = "databaseServers"
 	namespacesPrefix        = "namespaces"
 	authServersPrefix       = "authservers"
 	proxiesPrefix           = "proxies"

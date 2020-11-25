@@ -69,6 +69,9 @@ message Event {
         // RemoteCluster is a resource for remote clusters
         services.RemoteClusterV3 RemoteCluster = 16
             [ (gogoproto.jsontag) = "remote_cluster,omitempty" ];
+        // DatabaseServer is a resource for database servers.
+        services.DatabaseServerV2 DatabaseServer = 17
+            [ (gogoproto.jsontag) = "database_server,omitempty" ];
     }
 }
 

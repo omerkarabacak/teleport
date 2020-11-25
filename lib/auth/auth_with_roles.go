@@ -408,12 +408,12 @@ func (a *ServerWithRoles) KeepAliveServer(ctx context.Context, handle services.K
 	if err != nil {
 		return trace.AccessDenied("access denied")
 	}
-	if serverName != handle.Name {
-		return trace.AccessDenied("access denied")
-	}
 
 	switch handle.GetType() {
 	case teleport.KeepAliveNode:
+		if serverName != handle.Name {
+			return trace.AccessDenied("access denied")
+		}
 		if !a.hasBuiltinRole(string(teleport.RoleNode)) {
 			return trace.AccessDenied("access denied")
 		}
@@ -421,6 +421,9 @@ func (a *ServerWithRoles) KeepAliveServer(ctx context.Context, handle services.K
 			return trace.Wrap(err)
 		}
 	case teleport.KeepAliveApp:
+		if serverName != handle.Name {
+			return trace.AccessDenied("access denied")
+		}
 		if !a.hasBuiltinRole(string(teleport.RoleApp)) {
 			return trace.AccessDenied("access denied")
 		}
@@ -428,6 +431,12 @@ func (a *ServerWithRoles) KeepAliveServer(ctx context.Context, handle services.K
 			return trace.Wrap(err)
 		}
 	case teleport.KeepAliveDatabase:
+		// There can be multiple database servers per host so they send their
+		// host ID in a separate field because unlike SSH nodes the resource
+		// name cannot be the host ID.
+		if serverName != handle.HostID {
+			return trace.AccessDenied("access denied")
+		}
 		if !a.hasBuiltinRole(string(teleport.RoleDatabase)) {
 			return trace.AccessDenied("access denied")
 		}
