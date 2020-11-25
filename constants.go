@@ -128,9 +128,8 @@ const (
 	// ComponentApp is the application proxy service.
 	ComponentApp = "app:service"
 
-	// ComponentDB is the database proxy service.
-	// TODO(r0mant): Rename to ComponentDatabase.
-	ComponentDB = "db:service"
+	// ComponentDatabase is the database proxy service.
+	ComponentDatabase = "db:service"
 
 	// ComponentAppProxy is the application handler within the web proxy service.
 	ComponentAppProxy = "app:web"
@@ -498,13 +497,13 @@ const (
 	// allowed kubernetes users
 	TraitKubeUsers = "kubernetes_users"
 
-	// TraitDbNames is the name of the role variable used to store
+	// TraitDBNames is the name of the role variable used to store
 	// allowed database names.
-	TraitDbNames = "db_names"
+	TraitDBNames = "db_names"
 
-	// TraitDbUsers is the name of the role variable used to store
+	// TraitDBUsers is the name of the role variable used to store
 	// allowed database users.
-	TraitDbUsers = "db_users"
+	TraitDBUsers = "db_users"
 
 	// TraitInternalLoginsVariable is the variable used to store allowed
 	// logins for local accounts.
@@ -518,13 +517,13 @@ const (
 	// kubernetes users for local accounts.
 	TraitInternalKubeUsersVariable = "{{internal.kubernetes_users}}"
 
-	// TraitInternalDbNamesVariable is the variable used to store allowed
+	// TraitInternalDBNamesVariable is the variable used to store allowed
 	// database names for local accounts.
-	TraitInternalDbNamesVariable = "{{internal.db_names}}"
+	TraitInternalDBNamesVariable = "{{internal.db_names}}"
 
-	// TraitInternalDbUsersVariable is the variable used to store allowed
+	// TraitInternalDBUsersVariable is the variable used to store allowed
 	// database users for local accounts.
-	TraitInternalDbUsersVariable = "{{internal.db_users}}"
+	TraitInternalDBUsersVariable = "{{internal.db_users}}"
 )
 
 const (

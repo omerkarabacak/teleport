@@ -210,7 +210,6 @@ type Config struct {
 
 	// DatabaseService specifies name of the database proxy server to issue
 	// certificate for.
-	// TODO(r0mant): Do we really need this field as part of Teleport client?
 	DatabaseService string
 
 	// LocalForwardPorts are the local ports tsh listens on for port forwarding

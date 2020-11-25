@@ -141,8 +141,8 @@ func NewAdminRole() Role {
 				AppLabels:        Labels{Wildcard: []string{Wildcard}},
 				KubernetesLabels: Labels{Wildcard: []string{Wildcard}},
 				DatabaseLabels:   Labels{Wildcard: []string{Wildcard}},
-				DatabaseNames:    []string{teleport.TraitInternalDbNamesVariable},
-				DatabaseUsers:    []string{teleport.TraitInternalDbUsersVariable},
+				DatabaseNames:    []string{teleport.TraitInternalDBNamesVariable},
+				DatabaseUsers:    []string{teleport.TraitInternalDBUsersVariable},
 				Rules:            adminRules,
 			},
 		},
@@ -520,7 +520,7 @@ func applyValueTraits(val string, traits map[string][]string) ([]string, error) 
 	// internal.kubernetes_groups are supported at the moment.
 	if variable.Namespace() == teleport.TraitInternalPrefix {
 		switch variable.Name() {
-		case teleport.TraitLogins, teleport.TraitKubeGroups, teleport.TraitKubeUsers, teleport.TraitDbNames, teleport.TraitDbUsers:
+		case teleport.TraitLogins, teleport.TraitKubeGroups, teleport.TraitKubeUsers, teleport.TraitDBNames, teleport.TraitDBUsers:
 		default:
 			return nil, trace.BadParameter("unsupported variable %q", variable.Name())
 		}

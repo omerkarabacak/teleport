@@ -289,11 +289,14 @@ func (s *localSite) getConn(params DialParams) (conn net.Conn, useTunnel bool, e
 			return nil, false, trace.Wrap(err)
 		}
 
-		// Connections to applications should never occur over a direct dial, return right away.
-		if params.ConnType == services.AppTunnel {
-			return nil, false, trace.ConnectionProblem(err, "failed to connect to application")
+		// Connections to application and databaser servers should never occur
+		// over a direct dial, return right away.
+		switch params.ConnType {
+		case services.AppTunnel:
+			return nil, false, trace.ConnectionProblem(err, "failed to connect to application server")
+		case services.DatabaseTunnel:
+			return nil, false, trace.ConnectionProblem(err, "failed to connect to database server")
 		}
-		// TODO(r0mant): Add databases here too?
 
 		// This node can only be reached over a tunnel, don't attempt to dial
 		// remotely.

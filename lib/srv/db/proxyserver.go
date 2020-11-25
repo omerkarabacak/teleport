@@ -99,7 +99,6 @@ func NewProxyServer(ctx context.Context, config ProxyServerConfig) (*ProxyServer
 		closeCtx: ctx,
 		log:      logrus.WithField(trace.Component, "db:proxy"),
 	}
-	// TODO(r0mant): Copy TLS config?
 	server.TLSConfig.ClientAuth = tls.RequireAndVerifyClientCert
 	server.TLSConfig.GetConfigForClient = getConfigForClient(
 		server.TLSConfig, server.AccessPoint, server.log)

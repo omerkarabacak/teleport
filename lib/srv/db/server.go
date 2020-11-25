@@ -55,9 +55,6 @@ type Config struct {
 	StreamEmitter events.StreamEmitter
 	// TLSConfig is the *tls.Config for this server.
 	TLSConfig *tls.Config
-	// CipherSuites is the list of TLS cipher suites that have been configured
-	// for this process.
-	CipherSuites []uint16
 	// Authorizer is used to authorize requests coming from proxy.
 	Authorizer auth.Authorizer
 	// GetRotation returns the certificate rotation state.
@@ -77,34 +74,31 @@ func (c *Config) CheckAndSetDefaults() error {
 		c.Clock = clockwork.NewRealClock()
 	}
 	if c.DataDir == "" {
-		return trace.BadParameter("data dir missing")
+		return trace.BadParameter("missing DataDir")
 	}
 	if c.AuthClient == nil {
-		return trace.BadParameter("auth client log missing")
+		return trace.BadParameter("missing AuthClient")
 	}
 	if c.AccessPoint == nil {
-		return trace.BadParameter("access point missing")
+		return trace.BadParameter("missing AccessPoint")
 	}
 	if c.StreamEmitter == nil {
-		return trace.BadParameter("stream emitter missing")
+		return trace.BadParameter("missing StreamEmitter")
 	}
 	if c.TLSConfig == nil {
-		return trace.BadParameter("tls config missing")
-	}
-	if len(c.CipherSuites) == 0 {
-		return trace.BadParameter("cipersuites missing")
+		return trace.BadParameter("missing TLSConfig")
 	}
 	if c.Authorizer == nil {
-		return trace.BadParameter("authorizer missing")
+		return trace.BadParameter("missing Authorizer")
 	}
 	if c.GetRotation == nil {
-		return trace.BadParameter("rotation getter missing")
+		return trace.BadParameter("missing GetRotation")
 	}
 	if len(c.Servers) == 0 {
-		return trace.BadParameter("database servers missing")
+		return trace.BadParameter("missing Servers")
 	}
 	if c.OnHeartbeat == nil {
-		return trace.BadParameter("heartbeat missing")
+		return trace.BadParameter("missing OnHeartbeat")
 	}
 	if c.Credentials == nil {
 		session, err := awssession.NewSessionWithOptions(awssession.Options{
@@ -151,7 +145,7 @@ func New(ctx context.Context, config Config) (*Server, error) {
 	localCtx, cancel := context.WithCancel(ctx)
 	server := &Server{
 		Config:        config,
-		Entry:         logrus.WithField(trace.Component, teleport.ComponentDB),
+		Entry:         logrus.WithField(trace.Component, teleport.ComponentDatabase),
 		closeContext:  localCtx,
 		closeFunc:     cancel,
 		dynamicLabels: make(map[string]*labels.Dynamic),
@@ -211,7 +205,7 @@ func (s *Server) initDynamicLabels(ctx context.Context, server services.Database
 func (s *Server) initHeartbeat(ctx context.Context, server services.DatabaseServer) error {
 	heartbeat, err := srv.NewHeartbeat(srv.HeartbeatConfig{
 		Context:         s.closeContext,
-		Component:       teleport.ComponentDB,
+		Component:       teleport.ComponentDatabase,
 		Mode:            srv.HeartbeatModeDB,
 		Announcer:       s.AccessPoint,
 		GetServerInfo:   s.getServerInfoFunc(server),

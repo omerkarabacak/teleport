@@ -46,6 +46,8 @@ import (
 // Engine implements the Postgres database service that accepts client
 // connections coming over reverse tunnel from the proxy and proxies
 // them between the proxy and the Postgres database instance.
+//
+// Implements db.DatabaseEngine.
 type Engine struct {
 	// AuthClient is the cluster auth client.
 	AuthClient *auth.Client

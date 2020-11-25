@@ -451,9 +451,6 @@ type certRequest struct {
 	appClusterName string
 	// dbServiceName specifies the name of the database instance to encode.
 	dbServiceName string
-	// dbClusterName is the name of the cluster the database instance is in.
-	// TODO(r0mant): Unused.
-	dbClusterName string
 	// dbProtocol is the type of the database cert is being issued for.
 	dbProtocol string
 	// dbUsername is the optional database user.
@@ -653,7 +650,6 @@ func (a *Server) generateUserCert(req certRequest) (*certs, error) {
 	}
 
 	// See which database names and users this user is allowed to use.
-	// TODO(r0mant): Should this fail on AccessDenied?
 	dbNames, dbUsers, err := req.checker.CheckDatabaseNamesAndUsers(sessionTTL, req.overrideRoleTTL)
 	if err != nil && !trace.IsNotFound(err) {
 		return nil, trace.Wrap(err)

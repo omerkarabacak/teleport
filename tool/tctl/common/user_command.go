@@ -213,8 +213,8 @@ func (u *UserCommand) Add(client auth.ClientI) error {
 		teleport.TraitLogins:     strings.Split(u.allowedLogins, ","),
 		teleport.TraitKubeUsers:  strings.Split(u.kubeUsers, ","),
 		teleport.TraitKubeGroups: kubeGroups,
-		teleport.TraitDbNames:    strings.Split(u.dbNames, ","),
-		teleport.TraitDbUsers:    strings.Split(u.dbUsers, ","),
+		teleport.TraitDBNames:    strings.Split(u.dbNames, ","),
+		teleport.TraitDBUsers:    strings.Split(u.dbUsers, ","),
 	}
 
 	user.SetTraits(traits)

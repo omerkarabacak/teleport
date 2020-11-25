@@ -740,7 +740,7 @@ func NewTeleport(cfg *Config) (*TeleportProcess, error) {
 		process.initDatabases()
 		serviceStarted = true
 	} else {
-		warnOnErr(process.closeImportedDescriptors(teleport.ComponentDB))
+		warnOnErr(process.closeImportedDescriptors(teleport.ComponentDatabase))
 	}
 
 	process.RegisterFunc("common.rotate", process.periodicSyncRotationState)
@@ -2636,16 +2636,16 @@ func (process *TeleportProcess) initProxyEndpoint(conn *Connector) error {
 		})
 	}
 
-	// Start the database proxy server that will be accepting connections
-	// from the database clients (such as psql or mysql), authenticating
-	// and authorizing them, and then routing them to a respective database
-	// server over the reverse tunnel framework.
+	// Start the database proxy server that will be accepting connections from
+	// the database clients (such as psql or mysql), authenticating them, and
+	// then routing them to a respective database server over the reverse tunnel
+	// framework.
 	if listeners.db != nil {
 		authorizer, err := auth.NewAuthorizer(conn.Client, conn.Client, conn.Client)
 		if err != nil {
 			return trace.Wrap(err)
 		}
-		tlsConfig, err := conn.ServerIdentity.TLSConfig(nil)
+		tlsConfig, err := conn.ServerIdentity.TLSConfig(cfg.CipherSuites)
 		if err != nil {
 			return trace.Wrap(err)
 		}
@@ -2661,7 +2661,7 @@ func (process *TeleportProcess) initProxyEndpoint(conn *Connector) error {
 			return trace.Wrap(err)
 		}
 		process.RegisterCriticalFunc("proxy.db", func() error {
-			log := logrus.WithField(trace.Component, teleport.Component(teleport.ComponentDB))
+			log := logrus.WithField(trace.Component, teleport.Component(teleport.ComponentDatabase))
 			log.Infof("Starting Database proxy server on %v.", cfg.Proxy.WebAddr.Addr)
 			if err := dbProxyServer.Serve(listeners.db); err != nil {
 				log.WithError(err).Warn("Database proxy server exited with error.")

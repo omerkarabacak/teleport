@@ -319,9 +319,9 @@ const DatabaseServerSpecV2Schema = `{
         "region": {"type": "string"}
       }
     },
-	"version": {"type": "string"},
-	"hostname": {"type": "string"},
-	"host_id": {"type": "string"},
+    "version": {"type": "string"},
+    "hostname": {"type": "string"},
+    "host_id": {"type": "string"},
     "dynamic_labels": {
       "type": "object",
       "additionalProperties": false,

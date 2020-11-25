@@ -56,7 +56,7 @@ func (s *Server) newStreamWriter(sessionCtx *session.Context) (events.StreamWrit
 		Namespace:    defaults.Namespace,
 		ServerID:     sessionCtx.Server.GetHostID(),
 		RecordOutput: clusterConfig.GetSessionRecording() != services.RecordOff,
-		Component:    teleport.ComponentDB,
+		Component:    teleport.ComponentDatabase,
 	})
 }
 

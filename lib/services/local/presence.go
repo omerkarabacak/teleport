@@ -1068,6 +1068,9 @@ func (s *PresenceService) UpsertDatabaseServer(ctx context.Context, server servi
 	if err != nil {
 		return nil, trace.Wrap(err)
 	}
+	// Because there may be multiple database servers on a single host,
+	// they are stored under the following path in the backend:
+	//   /databaseServers/<namespace>/<host-uuid>/<server-name>
 	lease, err := s.Put(ctx, backend.Item{
 		Key: backend.Key(dbServersPrefix,
 			server.GetNamespace(),

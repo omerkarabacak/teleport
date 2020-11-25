@@ -279,7 +279,6 @@ func setupTestContext(ctx context.Context, t *testing.T) *testContext {
 		Authorizer:    dbAuthorizer,
 		Servers:       []services.DatabaseServer{dbServer},
 		TLSConfig:     tlsConfig,
-		CipherSuites:  utils.DefaultCipherSuites(),
 		GetRotation:   func(teleport.Role) (*services.Rotation, error) { return &services.Rotation{}, nil },
 		OnHeartbeat:   func(error) {},
 	})

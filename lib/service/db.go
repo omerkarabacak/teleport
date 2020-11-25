@@ -40,7 +40,7 @@ func (process *TeleportProcess) initDatabases() {
 
 func (process *TeleportProcess) initDatabaseService() error {
 	log := logrus.WithField(trace.Component, teleport.Component(
-		teleport.ComponentDB, process.id))
+		teleport.ComponentDatabase, process.id))
 
 	eventsCh := make(chan Event)
 	process.WaitForEvent(process.ExitContext(), DatabasesIdentityEvent, eventsCh)
@@ -70,14 +70,13 @@ func (process *TeleportProcess) initDatabaseService() error {
 		}
 	}
 
-	accessPoint, err := process.newLocalCache(conn.Client, cache.ForDatabases, []string{teleport.ComponentDB})
+	accessPoint, err := process.newLocalCache(conn.Client, cache.ForDatabases, []string{teleport.ComponentDatabase})
 	if err != nil {
 		return trace.Wrap(err)
 	}
 
 	// Start uploader that will scan a path on disk and upload completed
-	// sessions to the Auth Server.
-	// TODO(r0mant): Should this run once per process?
+	// sessions to the auth server.
 	err = process.initUploaderService(accessPoint, conn.Client)
 	if err != nil {
 		return trace.Wrap(err)
@@ -107,7 +106,7 @@ func (process *TeleportProcess) initDatabaseService() error {
 	if err != nil {
 		return trace.Wrap(err)
 	}
-	tlsConfig, err := conn.ServerIdentity.TLSConfig(nil)
+	tlsConfig, err := conn.ServerIdentity.TLSConfig(process.Config.CipherSuites)
 	if err != nil {
 		return trace.Wrap(err)
 	}
@@ -133,16 +132,15 @@ func (process *TeleportProcess) initDatabaseService() error {
 			Emitter:  asyncEmitter,
 			Streamer: streamer,
 		},
-		Authorizer:   authorizer,
-		TLSConfig:    tlsConfig,
-		CipherSuites: process.Config.CipherSuites,
-		GetRotation:  process.getRotation,
-		Servers:      databaseServers,
+		Authorizer:  authorizer,
+		TLSConfig:   tlsConfig,
+		GetRotation: process.getRotation,
+		Servers:     databaseServers,
 		OnHeartbeat: func(err error) {
 			if err != nil {
-				process.BroadcastEvent(Event{Name: TeleportDegradedEvent, Payload: teleport.ComponentDB})
+				process.BroadcastEvent(Event{Name: TeleportDegradedEvent, Payload: teleport.ComponentDatabase})
 			} else {
-				process.BroadcastEvent(Event{Name: TeleportOKEvent, Payload: teleport.ComponentDB})
+				process.BroadcastEvent(Event{Name: TeleportOKEvent, Payload: teleport.ComponentDatabase})
 			}
 		},
 	})
@@ -156,7 +154,7 @@ func (process *TeleportProcess) initDatabaseService() error {
 	// Create and start the agent pool.
 	agentPool, err := reversetunnel.NewAgentPool(process.ExitContext(),
 		reversetunnel.AgentPoolConfig{
-			Component:   teleport.ComponentDB,
+			Component:   teleport.ComponentDatabase,
 			HostUUID:    conn.ServerIdentity.ID.HostUUID,
 			ProxyAddr:   tunnelAddr,
 			Client:      conn.Client,
