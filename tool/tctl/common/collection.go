@@ -494,7 +494,7 @@ func (c *dbCollection) writeText(w io.Writer) error {
 	t := asciitable.MakeTable([]string{"Name", "Protocol", "Address"})
 	for _, server := range c.servers {
 		t.AddRow([]string{
-			server.GetDatabaseName(), server.GetProtocol(), server.GetURI(),
+			server.GetName(), server.GetProtocol(), server.GetURI(),
 		})
 	}
 	_, err := t.AsBuffer().WriteTo(w)

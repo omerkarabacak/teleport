@@ -1076,7 +1076,7 @@ func showDatabases(servers []services.DatabaseServer, active []string, verbose b
 	if verbose {
 		t := asciitable.MakeTable([]string{"Name", "Description", "URI", "Labels"})
 		for _, server := range servers {
-			name := server.GetDatabaseName()
+			name := server.GetName()
 			if utils.SliceContainsStr(active, name) {
 				name = fmt.Sprintf("> %v", name)
 			}
@@ -1091,7 +1091,7 @@ func showDatabases(servers []services.DatabaseServer, active []string, verbose b
 	} else {
 		t := asciitable.MakeTable([]string{"Name", "Description", "Labels"})
 		for _, server := range servers {
-			name := server.GetDatabaseName()
+			name := server.GetName()
 			if utils.SliceContainsStr(active, name) {
 				name = fmt.Sprintf("> %v", name)
 			}

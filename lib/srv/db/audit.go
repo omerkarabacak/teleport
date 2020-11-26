@@ -112,7 +112,7 @@ func (s *Server) emitSessionStartEventFn(streamWriter events.StreamWriter) func(
 				SessionID: session.ID,
 			},
 			DatabaseMetadata: &events.DatabaseMetadata{
-				DatabaseService:  session.Server.GetDatabaseName(),
+				DatabaseService:  session.Server.GetName(),
 				DatabaseProtocol: session.Server.GetProtocol(),
 				DatabaseURI:      session.Server.GetURI(),
 				DatabaseName:     session.DatabaseName,
@@ -138,7 +138,7 @@ func (s *Server) emitSessionEndEventFn(streamWriter events.StreamWriter) func(se
 				SessionID: session.ID,
 			},
 			DatabaseMetadata: &events.DatabaseMetadata{
-				DatabaseService:  session.Server.GetDatabaseName(),
+				DatabaseService:  session.Server.GetName(),
 				DatabaseProtocol: session.Server.GetProtocol(),
 				DatabaseURI:      session.Server.GetURI(),
 				DatabaseName:     session.DatabaseName,
@@ -164,7 +164,7 @@ func (s *Server) emitQueryEventFn(streamWriter events.StreamWriter) func(session
 				SessionID: session.ID,
 			},
 			DatabaseMetadata: &events.DatabaseMetadata{
-				DatabaseService:  session.Server.GetDatabaseName(),
+				DatabaseService:  session.Server.GetName(),
 				DatabaseProtocol: session.Server.GetProtocol(),
 				DatabaseURI:      session.Server.GetURI(),
 				DatabaseName:     session.DatabaseName,

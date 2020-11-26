@@ -129,8 +129,6 @@ type RouteToDatabase struct {
 	// ServiceName is the name of the Teleport database proxy service
 	// to route requests to.
 	ServiceName string
-	// ClusterName is the cluster the database is connected to.
-	ClusterName string
 	// Protocol is the database protocol.
 	//
 	// It is embedded in identity so clients can understand what type
@@ -204,29 +202,25 @@ var (
 	// database service name into certificates.
 	DatabaseServiceNameASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 1}
 
-	// DatabaseClusterNameASN1ExtensionOID is an extension ID used when encoding/decoding
-	// cluster database service is running in into certificates.
-	DatabaseClusterNameASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 2}
-
 	// DatabaseProtocolASN1ExtensionOID is an extension ID used when encoding/decoding
 	// database protocol into certificates.
-	DatabaseProtocolASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 3}
+	DatabaseProtocolASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 2}
 
 	// DatabaseUsernameASN1ExtensionOID is an extension ID used when encoding/decoding
 	// database username into certificates.
-	DatabaseUsernameASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 4}
+	DatabaseUsernameASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 3}
 
 	// DatabaseNameASN1ExtensionOID is an extension ID used when encoding/decoding
 	// database name into certificates.
-	DatabaseNameASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 5}
+	DatabaseNameASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 4}
 
 	// DatabaseNamesASN1ExtensionOID is an extension OID used when encoding/decoding
 	// allowed database names into certificates.
-	DatabaseNamesASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 6}
+	DatabaseNamesASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 5}
 
 	// DatabaseUsersASN1ExtensionOID is an extension OID used when encoding/decoding
 	// allowed database users into certificates.
-	DatabaseUsersASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 7}
+	DatabaseUsersASN1ExtensionOID = asn1.ObjectIdentifier{1, 3, 9999, 2, 6}
 )
 
 // Subject converts identity to X.509 subject name
@@ -314,13 +308,6 @@ func (id *Identity) Subject() (pkix.Name, error) {
 			pkix.AttributeTypeAndValue{
 				Type:  DatabaseServiceNameASN1ExtensionOID,
 				Value: id.RouteToDatabase.ServiceName,
-			})
-	}
-	if id.RouteToDatabase.ClusterName != "" {
-		subject.ExtraNames = append(subject.ExtraNames,
-			pkix.AttributeTypeAndValue{
-				Type:  DatabaseClusterNameASN1ExtensionOID,
-				Value: id.RouteToDatabase.ClusterName,
 			})
 	}
 	if id.RouteToDatabase.Protocol != "" {
@@ -425,11 +412,6 @@ func FromSubject(subject pkix.Name, expires time.Time) (*Identity, error) {
 			val, ok := attr.Value.(string)
 			if ok {
 				id.RouteToDatabase.ServiceName = val
-			}
-		case attr.Type.Equal(DatabaseClusterNameASN1ExtensionOID):
-			val, ok := attr.Value.(string)
-			if ok {
-				id.RouteToDatabase.ClusterName = val
 			}
 		case attr.Type.Equal(DatabaseProtocolASN1ExtensionOID):
 			val, ok := attr.Value.(string)

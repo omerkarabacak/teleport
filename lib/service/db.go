@@ -89,7 +89,6 @@ func (process *TeleportProcess) initDatabaseService() error {
 			db.Name,
 			db.StaticLabels,
 			services.DatabaseServerSpecV2{
-				Name:          db.Name,
 				Description:   db.Description,
 				Protocol:      db.Protocol,
 				URI:           db.URI,

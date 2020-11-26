@@ -150,29 +150,27 @@ message DatabaseServerV2 {
 
 // DatabaseServerSpecV2 is the database server spec.
 message DatabaseServerSpecV2 {
-    // Name is the database server identifier.
-    string Name = 1 [ (gogoproto.jsontag) = "name" ];
     // Description is a free-form text describing this database server.
-    string Description = 2 [ (gogoproto.jsontag) = "description,omitempty" ];
+    string Description = 1 [ (gogoproto.jsontag) = "description,omitempty" ];
     // Protocol is the database type e.g. postgres, mysql, etc.
-    string Protocol = 3 [ (gogoproto.jsontag) = "protocol" ];
+    string Protocol = 2 [ (gogoproto.jsontag) = "protocol" ];
     // URI is the database connection address.
-    string URI = 4 [ (gogoproto.jsontag) = "uri" ];
+    string URI = 3 [ (gogoproto.jsontag) = "uri" ];
     // CACert is an optional base64-encoded database CA certificate.
-    bytes CACert = 5 [ (gogoproto.jsontag) = "ca_cert,omitempty" ];
+    bytes CACert = 4 [ (gogoproto.jsontag) = "ca_cert,omitempty" ];
     // AWS contains AWS specific settings for RDS/Aurora databases.
-    AWS AWS = 6 [ (gogoproto.nullable) = false, (gogoproto.jsontag) = "aws" ];
+    AWS AWS = 5 [ (gogoproto.nullable) = false, (gogoproto.jsontag) = "aws" ];
     // Version is the Teleport version that the server is running.
-    string Version = 7 [ (gogoproto.jsontag) = "version" ];
+    string Version = 6 [ (gogoproto.jsontag) = "version" ];
     // Hostname is the database server hostname.
-    string Hostname = 8 [ (gogoproto.jsontag) = "hostname" ];
+    string Hostname = 7 [ (gogoproto.jsontag) = "hostname" ];
     // HostID is the ID of the host the database server is running on.
-    string HostID = 9 [ (gogoproto.jsontag) = "host_id" ];
+    string HostID = 8 [ (gogoproto.jsontag) = "host_id" ];
     // DynamicLabels is the database server dynamic labels.
-    map<string, CommandLabelV2> DynamicLabels = 10
+    map<string, CommandLabelV2> DynamicLabels = 9
         [ (gogoproto.nullable) = false, (gogoproto.jsontag) = "dynamic_labels,omitempty" ];
     // Rotation contains the server CA rotation information.
-    Rotation Rotation = 11
+    Rotation Rotation = 10
         [ (gogoproto.nullable) = false, (gogoproto.jsontag) = "rotation,omitempty" ];
 }
 

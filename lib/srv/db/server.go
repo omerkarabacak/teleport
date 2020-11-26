@@ -388,11 +388,11 @@ func (s *Server) authorize(ctx context.Context) (*session.Context, error) {
 	// Fetch the requested database server.
 	var server services.DatabaseServer
 	for _, s := range s.Servers {
-		if s.GetDatabaseName() == identity.RouteToDatabase.ServiceName {
+		if s.GetName() == identity.RouteToDatabase.ServiceName {
 			server = s
 		}
 	}
-	s.Debugf("Will connect to database %q at %v.", server.GetDatabaseName(),
+	s.Debugf("Will connect to database %q at %v.", server.GetName(),
 		server.GetURI())
 	id := uuid.New()
 	return &session.Context{
@@ -402,7 +402,7 @@ func (s *Server) authorize(ctx context.Context) (*session.Context, error) {
 		Checker:  authContext.Checker,
 		Log: s.WithFields(logrus.Fields{
 			"id": id,
-			"db": server.GetDatabaseName(),
+			"db": server.GetName(),
 		}),
 	}, nil
 }

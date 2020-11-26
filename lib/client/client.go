@@ -350,7 +350,7 @@ func (proxy *ProxyClient) GetDatabaseServersFor(ctx context.Context, namespace, 
 		return nil, trace.Wrap(err)
 	}
 	for _, server := range servers {
-		if server.GetDatabaseName() == dbName {
+		if server.GetName() == dbName {
 			result = append(result, server)
 		}
 	}

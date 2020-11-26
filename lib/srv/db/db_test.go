@@ -243,7 +243,7 @@ func setupTestContext(ctx context.Context, t *testing.T) *testContext {
 	postgresServer := setupPostgresServer(ctx, t, dbAuthClient)
 
 	// Create a database server for the test database service.
-	dbServer := makeDatabaseServer(hostID, fmt.Sprintf("localhost:%v", postgresServer.Port()))
+	dbServer := makeDatabaseServer("test", fmt.Sprintf("localhost:%v", postgresServer.Port()), hostID)
 	_, err = dbAuthClient.UpsertDatabaseServer(ctx, dbServer)
 	require.NoError(t, err)
 
@@ -372,15 +372,15 @@ func connectToPostgres(ctx context.Context, testCtx *testContext, config connect
 	return pgConn, nil
 }
 
-func makeDatabaseServer(name, uri string) services.DatabaseServer {
+func makeDatabaseServer(name, uri, hostID string) services.DatabaseServer {
 	return services.NewDatabaseServerV2(
 		name,
 		nil,
 		services.DatabaseServerSpecV2{
-			Name:     "test",
 			Protocol: defaults.ProtocolPostgres,
 			URI:      uri,
 			Version:  teleport.Version,
 			Hostname: teleport.APIDomain,
+			HostID:   hostID,
 		})
 }

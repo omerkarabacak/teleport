@@ -55,8 +55,6 @@ type DatabaseServer interface {
 	SetRotation(Rotation)
 	// String returns string representation of the server.
 	String() string
-	// GetDatabaseName returns the database server identifier.
-	GetDatabaseName() string
 	// GetDescription returns the database server description.
 	GetDescription() string
 	// GetProtocol returns the database server protocol.
@@ -205,11 +203,6 @@ func (s *DatabaseServerV2) LabelsString() string {
 	return LabelsAsString(s.Metadata.Labels, s.Spec.DynamicLabels)
 }
 
-// GetDatabaseName returns the database server identifier.
-func (s *DatabaseServerV2) GetDatabaseName() string {
-	return s.Spec.Name
-}
-
 // GetDescription returns the database server description.
 func (s *DatabaseServerV2) GetDescription() string {
 	return s.Spec.Description
@@ -252,12 +245,24 @@ func (s *DatabaseServerV2) CheckAndSetDefaults() error {
 		return trace.Wrap(err)
 	}
 	if s.Kind == "" {
-		return trace.BadParameter("database server kind is empty")
+		return trace.BadParameter("database server %q kind is empty", s.GetName())
 	}
 	for key := range s.Spec.DynamicLabels {
 		if !IsValidLabelKey(key) {
-			return trace.BadParameter("invalid label key: %q", key)
+			return trace.BadParameter("database server %q invalid label key: %q", s.GetName(), key)
 		}
+	}
+	if s.Spec.Protocol == "" {
+		return trace.BadParameter("database server %q protocol is empty", s.GetName())
+	}
+	if s.Spec.URI == "" {
+		return trace.BadParameter("database server %q URI is empty", s.GetName())
+	}
+	if s.Spec.Hostname == "" {
+		return trace.BadParameter("database server %q hostname is empty", s.GetName())
+	}
+	if s.Spec.HostID == "" {
+		return trace.BadParameter("database server %q host ID is empty", s.GetName())
 	}
 	return nil
 }
@@ -290,9 +295,6 @@ func CompareDatabaseServers(a, b DatabaseServer) int {
 	if !a.Expiry().Equal(b.Expiry()) {
 		return OnlyTimestampsDifferent
 	}
-	if a.GetDatabaseName() != b.GetDatabaseName() {
-		return Different
-	}
 	if a.GetProtocol() != b.GetProtocol() {
 		return Different
 	}
@@ -307,7 +309,6 @@ const DatabaseServerSpecV2Schema = `{
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "name": {"type": "string"},
     "description": {"type": "string"},
     "protocol": {"type": "string"},
     "uri": {"type": "string"},

@@ -2038,14 +2038,10 @@ func TestCheckAccessToDatabase(t *testing.T) {
 	utils.InitLoggerForTests(testing.Verbose())
 	dbStage := NewDatabaseServerV2("stage",
 		map[string]string{"env": "stage"},
-		DatabaseServerSpecV2{
-			Name: "stage",
-		})
+		DatabaseServerSpecV2{})
 	dbProd := NewDatabaseServerV2("prod",
 		map[string]string{"env": "prod"},
-		DatabaseServerSpecV2{
-			Name: "prod",
-		})
+		DatabaseServerSpecV2{})
 	roleDevStage := &RoleV3{
 		Metadata: Metadata{Name: "dev-stage", Namespace: defaults.Namespace},
 		Spec: RoleSpecV3{
@@ -2223,26 +2219,20 @@ func TestCheckAccessToDatabaseService(t *testing.T) {
 	utils.InitLoggerForTests(testing.Verbose())
 	dbNoLabels := NewDatabaseServerV2("test",
 		nil,
-		DatabaseServerSpecV2{
-			Name: "test",
-		})
+		DatabaseServerSpecV2{})
 	dbStage := NewDatabaseServerV2("stage",
 		map[string]string{"env": "stage"},
 		DatabaseServerSpecV2{
-			Name:          "stage",
 			DynamicLabels: map[string]CommandLabelV2{"arch": {Result: "x86"}},
 		})
 	dbStage2 := NewDatabaseServerV2("stage2",
 		map[string]string{"env": "stage"},
 		DatabaseServerSpecV2{
-			Name:          "stage2",
 			DynamicLabels: map[string]CommandLabelV2{"arch": {Result: "amd64"}},
 		})
 	dbProd := NewDatabaseServerV2("prod",
 		map[string]string{"env": "prod"},
-		DatabaseServerSpecV2{
-			Name: "prod",
-		})
+		DatabaseServerSpecV2{})
 	roleAdmin := &RoleV3{
 		Metadata: Metadata{Name: "admin", Namespace: defaults.Namespace},
 		Spec: RoleSpecV3{

@@ -46,5 +46,5 @@ type Context struct {
 // String returns string representation of the session parameters.
 func (c *Context) String() string {
 	return fmt.Sprintf("db[%v] identity[%v] dbUser[%v] dbName[%v]",
-		c.Server.GetDatabaseName(), c.Identity.Username, c.DatabaseUser, c.DatabaseName)
+		c.Server.GetName(), c.Identity.Username, c.DatabaseUser, c.DatabaseName)
 }

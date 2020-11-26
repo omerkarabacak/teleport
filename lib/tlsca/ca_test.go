@@ -97,7 +97,6 @@ func TestKubeExtensions(t *testing.T) {
 		TeleportCluster:   "tele-cluster",
 		RouteToDatabase: RouteToDatabase{
 			ServiceName: "postgres-rds",
-			ClusterName: "root",
 			Protocol:    "postgres",
 			Username:    "postgres",
 		},

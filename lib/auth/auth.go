@@ -678,7 +678,6 @@ func (a *Server) generateUserCert(req certRequest) (*certs, error) {
 		TeleportCluster: clusterName,
 		RouteToDatabase: tlsca.RouteToDatabase{
 			ServiceName: req.dbServiceName,
-			ClusterName: req.routeToCluster,
 			Protocol:    req.dbProtocol,
 			Username:    req.dbUsername,
 			Database:    req.dbDatabase,

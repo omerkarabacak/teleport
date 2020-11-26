@@ -222,7 +222,7 @@ func (s *ProxyServer) authorize(ctx context.Context) (*proxyContext, error) {
 	if err != nil {
 		return nil, trace.Wrap(err)
 	}
-	s.log.Debugf("Will proxy to database %q on server %s.", server.GetDatabaseName(), server)
+	s.log.Debugf("Will proxy to database %q on server %s.", server.GetName(), server)
 	return &proxyContext{
 		identity: identity,
 		site:     site,
@@ -233,7 +233,7 @@ func (s *ProxyServer) authorize(ctx context.Context) (*proxyContext, error) {
 // pickDatabaseServer finds a database server instance to proxy requests
 // to based on the routing information from the provided identity.
 func (s *ProxyServer) pickDatabaseServer(ctx context.Context, identity tlsca.Identity) (reversetunnel.RemoteSite, services.DatabaseServer, error) {
-	site, err := s.Tunnel.GetSite(identity.RouteToDatabase.ClusterName)
+	site, err := s.Tunnel.GetSite(identity.RouteToCluster)
 	if err != nil {
 		return nil, nil, trace.Wrap(err)
 	}
@@ -249,7 +249,7 @@ func (s *ProxyServer) pickDatabaseServer(ctx context.Context, identity tlsca.Ide
 	// Find out which database servers proxy the database a user is
 	// connecting to using routing information from identity.
 	for _, server := range servers {
-		if server.GetDatabaseName() == identity.RouteToDatabase.ServiceName {
+		if server.GetName() == identity.RouteToDatabase.ServiceName {
 			// TODO(r0mant): Return all matching servers and round-robin
 			// between them.
 			return site, server, nil
@@ -257,7 +257,7 @@ func (s *ProxyServer) pickDatabaseServer(ctx context.Context, identity tlsca.Ide
 	}
 	return nil, nil, trace.NotFound("database %q not found among registered database servers on cluster %q",
 		identity.RouteToDatabase.ServiceName,
-		identity.RouteToDatabase.ClusterName)
+		identity.RouteToCluster)
 }
 
 // getConfigForServer returns TLS config used for establishing connection
@@ -277,7 +277,7 @@ func (s *ProxyServer) getConfigForServer(ctx context.Context, identity tlsca.Ide
 	}
 	response, err := s.AuthClient.SignDatabaseCSR(ctx, &proto.DatabaseCSRRequest{
 		CSR:         csr,
-		ClusterName: identity.RouteToDatabase.ClusterName,
+		ClusterName: identity.RouteToCluster,
 	})
 	if err != nil {
 		return nil, trace.Wrap(err)
