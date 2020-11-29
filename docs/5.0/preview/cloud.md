@@ -5,17 +5,20 @@ description: Teleport hosted and managed by the Teleport team.
 
 # Teleport Cloud Preview
 
-Teleport cloud is a hosted, managed Teleport cluster.
-Request access to the preview [here](https://goteleport.com/get-started/).
+Teleport Cloud is a hosted, managed Teleport cluster. 
+Currently Teleport Cloud is in preview status and we are maintaining a 
+wait-list of interested parties wanting access to the service. 
+To request access age get on the waiting list [here](https://goteleport.com/get-started/).
 
 ## Status
 
 Teleport Cloud is currently only recommended for environments that do not require
-meeting strict compliance standards or SLA uptime guarantees.
+strict compliance standards or SLA uptime guarantees.
 
-We have designed Teleport Cloud environment to be secure; however we are in the process of
+We have designed Teleport Cloud environment to be secure; however we are still in the process of
 scrutinizing and executing on our security roadmap and working with independent security
-auditors to identify any gaps.
+auditors to identify any gaps. Only once this is complete will we be able to to verify 
+that it is ready for strict compliance use-cases.
 
 ## Roadmap
 
@@ -27,9 +30,9 @@ compliance programs such as FedRAMP.
 
 ## Billing
 
-Usage will be collected, but billing will not be set up until February.
-The preview version of Teleport Cloud will be free of charge to customers until
-we commit to a formal SLA.
+Usage data will be collected, but billing will not be set up until February.
+The preview version of Teleport Cloud is provided with free of charge primarily
+for testing and POC purposes until we commit to a formal SLA. 
 
 ## Managed Teleport Settings
 
@@ -42,8 +45,8 @@ It terminates Application, Database and Kubernetes sessions on the proxy.
 The session records are stored in S3 using at-rest encryption.
 We have yet to define specific retention policies.
 
-Customer data, including audit logging, is backed up using the DynamodDB
-"point in time recovery" system. Data can be recovered from up to 35 days.
+Customer data, including audit logging, is backed up using the DynamoDB
+"point in time recovery" system. Data can be recovered up to 35 days.
 This retention period is not configurable.
 
 ## High availability
@@ -60,17 +63,18 @@ We plan to get to 99.99% uptime SLA.
 
 ### Can I use Teleport Cloud Preview in production?
 
-It should be OK to use Cloud in non mission critical systems that do not
-require 24/7 access or when fallback option is available.
+We expect Teleport Cloud to be OK to use in non mission critical systems
+that do not require 24/7 access or a guaranteed SLA. We recommend a 
+fallback option be make available. 
 
 ### Are you using AWS-managed encryption keys, or CMKs via KMS?
 
-We use AWS-managed keys. There is currently no option to provide your own key.
+We use AWS-managed keys. Currently there is no option to provide your own key.
 
 ### Is this Teleport's S3 bucket, or my bucket based on my AWS credentials?
 
 It's a Teleport-managed S3 bucket with AWS-managed keys.
-There is no way to provide your own bucket.
+Currently there is no way to provide your own bucket.
 
 ### How do I add nodes to Teleport Cloud?
 
@@ -100,8 +104,9 @@ $ tctl nodes add --ttl=5m --roles=node,proxy --token=$(uuid)
 
 ### When will a security audit be available?
 
-The Teleport Cloud security audit starts in January.
-We will publish it in Q1 2021 after fixing any security issues found.
+The Teleport Cloud security audit starts in January. 
+We will work on fixing any security issues that are identified and 
+publish it in Q1 2021.
 
 ### What does Teleport Cloud run in?
 
@@ -133,7 +138,7 @@ FIPS is not currently an option for Teleport Cloud clusters.
 Password hashes are generated using
 [Golang's bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt).
 
-### How does teleport manage web certificates? Can I upload my own?
+### How does Teleport manage web certificates? Can I upload my own?
 
 Teleport uses [letsencrypt.org](https://letsencrypt.org/) to issue
 certificates for every customer. It is not possible to upload a custom
